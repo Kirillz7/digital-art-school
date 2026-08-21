@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Видеоуроки | Цифровое Искусство</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <style>
+        /* Дополнительные стили для страницы видео */
+        .video-page {
+            padding: 120px 0 60px;
+        }
+        .video-page .video-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        .video-page .video-item {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        .video-page .video-item:hover {
+            border-color: rgba(255, 45, 120, 0.2);
+        }
+        .video-page .video-item iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: none;
+            border-radius: var(--radius-sm);
+        }
+        .video-page .video-item h4 {
+            margin-top: 10px;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+        .video-page .no-videos {
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 40px 0;
+        }
+        .video-page .back-link {
+            display: inline-block;
+            margin-top: 30px;
+        }
+        .video-page .back-link a {
+            color: var(--text-secondary);
+            text-decoration: underline;
+        }
+        .video-page .back-link a:hover {
+            color: var(--text-primary);
+        }
+        .video-page .access-denied {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .video-page .access-denied h2 {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+        .video-page .access-denied p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== ХЕДЕР ========== -->
+    <header class="header" id="header">
+        <div class="container">
+            <a href="index.html" class="logo">Цифровое <span>Искусство</span></a>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html#modules">Модули</a></li>
+                <li><a href="index.html#works">Работы</a></li>
+                <li><a href="index.html#pricing">Цены</a></li>
+                <li><a href="index.html#contact" class="nav-cta">Записаться</a></li>
+            </ul>
+
+            <button class="theme-toggle" id="themeToggle" aria-label="Сменить тему">🌙</button>
+
+            <button class="hamburger" id="hamburger" aria-label="Меню">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========== ОСНОВНОЙ КОНТЕНТ ========== -->
+    <section class="section video-page" id="videoPage">
+        <div class="container">
+
+            <!-- Блок, который показывается, если доступ есть -->
+            <div id="videoContent">
+                <div class="section-label">📹 Видеоуроки</div>
+                <h2 class="section-title">Смотри <span class="highlight">наши уроки</span></h2>
+                <p class="section-sub">Все видео, добавленные в админ-панели.</p>
+
+                <div id="videoGallery" class="video-gallery">
+                    <!-- Видео загружаются через JavaScript -->
+                </div>
+
+                <div class="back-link">
+                    <a href="index.html">← Вернуться на главную</a>
+                </div>
+            </div>
+
+            <!-- Блок, который показывается, если доступа нет -->
+            <div id="accessDenied" class="access-denied" style="display: none;">
+                <h2>🔒 Доступ ограничен</h2>
+                <p>Чтобы смотреть видео, получите бесплатный доступ на главной странице.</p>
+                <a href="index.html" class="btn btn-primary btn-arrow">На главную</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========== ФУТЕР ========== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html">Главная</a>
+                <a href="index.html#modules">Модули</a>
+                <a href="index.html#works">Работы</a>
+                <a href="index.html#pricing">Цены</a>
+                <a href="index.html#contact">Контакты</a>
+            </div>
+            <p>
+                © 2026 Цифровое Искусство — школа дизайна для школьников 5–8 классов.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // ПРОВЕРКА ДОСТУПА К ВИДЕО
+        // ============================================
+        const videoContent = document.getElementById('videoContent');
+        const accessDenied = document.getElementById('accessDenied');
+        const hasAccess = localStorage.getItem('videoAccess') === 'true';
+
+        if (!hasAccess) {
+            videoContent.style.display = 'none';
+            accessDenied.style.display = 'block';
+        } else {
+            videoContent.style.display = 'block';
+            accessDenied.style.display = 'none';
+            // Загружаем видео
+            loadVideos();
+        }
+
+        // ============================================
+        // ЗАГРУЗКА ВИДЕО (аналогично script.js)
+        // ============================================
+        function loadVideos() {
+            const gallery = document.getElementById('videoGallery');
+            const videos = JSON.parse(localStorage.getItem('videos')) || [];
+
+            if (videos.length === 0) {
+                gallery.innerHTML = '<p class="no-videos">Видео пока не добавлены в админ-панели.</p>';
+                return;
+            }
+
+            gallery.innerHTML = videos.map(v => {
+                let embedUrl = v.url;
+                if (v.url.includes('youtube.com/watch?v=')) {
+                    embedUrl = v.url.replace('watch?v=', 'embed/');
+                } else if (v.url.includes('youtu.be/')) {
+                    const id = v.url.split('/').pop();
+                    embedUrl = `https://www.youtube.com/embed/${id}`;
+                } else if (v.url.includes('vimeo.com/')) {
+                    const id = v.url.split('/').pop();
+                    embedUrl = `https://player.vimeo.com/video/${id}`;
+                }
+                return `
+                    <div class="video-item">
+                        <iframe src="${embedUrl}" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                        <h4>${v.title}</h4>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // ГАМБУРГЕР (для мобильной навигации)
+        // ============================================
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        if (hamburger && navLinks) {
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('open');
+            });
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('open');
+                });
+            });
+        }
+
+        // ============================================
+        // ТЕМА (светлая/тёмная)
+        // ============================================
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeToggle.textContent = '☀️';
+        }
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            themeToggle.textContent = isLight ? '☀️' : '🌙';
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+
+        // ============================================
+        // ТЕНЬ НА ХЕДЕРЕ
+        // ============================================
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 20) {
+                header.style.boxShadow = '0 4px 40px rgba(0,0,0,0.4)';
+            } else {
+                header.style.boxShadow = 'none';
+            }
+        });
+
+        console.log('📹 Страница видео загружена');
+    </script>
+</body>
+</html>

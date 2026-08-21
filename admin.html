@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админ-панель | Цифровое Искусство</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        /* ---- Стили для админки ---- */
+        .admin-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        .admin-section { background: var(--bg-card); border-radius: var(--radius); padding: 30px; margin-bottom: 40px; border: 1px solid var(--border-color); }
+        .admin-section h2 { font-size: 24px; margin-bottom: 20px; }
+        .admin-section label { display: block; margin: 16px 0 6px; font-weight: 600; color: var(--text-secondary); }
+        .admin-section input, .admin-section textarea { width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: var(--font); font-size: 15px; }
+        .admin-section input:focus, .admin-section textarea:focus { border-color: var(--pink); outline: none; box-shadow: 0 0 0 4px var(--pink-glow); }
+        .admin-section button { margin-top: 16px; }
+        .admin-list { margin-top: 24px; }
+        .admin-item { background: var(--bg-primary); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border-color); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+        .admin-item .info { flex: 2; min-width: 200px; }
+        .admin-item .info strong { display: block; font-size: 16px; }
+        .admin-item .info .meta { font-size: 13px; color: var(--text-muted); }
+        .admin-item .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .admin-item .actions button { padding: 6px 14px; border: none; border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-processed { background: var(--cyan); color: #000; }
+        .btn-reply { background: var(--purple); color: #fff; }
+        .btn-delete { background: var(--pink); color: #fff; }
+        .btn-processed:hover, .btn-reply:hover, .btn-delete:hover { opacity: 0.8; transform: scale(1.02); }
+        .reply-box { display: none; margin-top: 8px; width: 100%; }
+        .reply-box textarea { width: 100%; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); resize: vertical; font-family: var(--font); }
+        .reply-box .save-reply { margin-top: 6px; padding: 4px 16px; background: var(--cyan); color: #000; border: none; border-radius: 100px; cursor: pointer; font-weight: 600; }
+        .status-badge { display: inline-block; padding: 2px 12px; border-radius: 100px; font-size: 12px; font-weight: 600; }
+        .status-new { background: rgba(255,45,120,0.2); color: var(--pink); }
+        .status-processed { background: rgba(0,212,255,0.2); color: var(--cyan); }
+        .status-replied { background: rgba(108,60,225,0.2); color: var(--purple); }
+        .back-link { display: inline-block; margin-top: 20px; }
+        .back-link a { color: var(--text-secondary); text-decoration: underline; }
+        .back-link a:hover { color: var(--text-primary); }
+
+        /* Страница входа */
+        .login-container { max-width: 400px; margin: 100px auto; padding: 40px; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border-color); text-align: center; }
+        .login-container h1 { font-size: 28px; margin-bottom: 8px; }
+        .login-container p { color: var(--text-secondary); margin-bottom: 24px; }
+        .login-container input { width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 16px; margin-bottom: 16px; }
+        .login-container .btn { width: 100%; justify-content: center; }
+        .login-container .error { color: var(--pink); margin-top: 12px; font-size: 14px; }
+        .admin-content { display: none; }
+
+        /* Кнопка темы в хедере админки */
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .admin-header .theme-toggle { background: none; border: none; font-size: 22px; cursor: pointer; padding: 6px 10px; border-radius: 100px; transition: var(--transition); color: var(--text-secondary); }
+        .admin-header .theme-toggle:hover { background: rgba(255,255,255,0.06); transform: scale(1.1); }
+        .light-theme .admin-header .theme-toggle:hover { background: rgba(0,0,0,0.06); }
+    </style>
+</head>
+<body>
+
+    <!-- СТРАНИЦА ВХОДА -->
+    <div id="loginPage" class="login-container">
+        <h1>🔐 Админ-панель</h1>
+        <p id="loginMessage">Введите пароль для доступа</p>
+        <input type="password" id="passwordInput" placeholder="Пароль" />
+        <button class="btn btn-primary" id="loginBtn">Войти</button>
+        <div id="loginError" class="error"></div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div id="adminContent" class="admin-content">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>🛠️ Админ-панель</h1>
+                <button class="theme-toggle" id="adminThemeToggle" aria-label="Сменить тему">🌙</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">Управление заявками и видеоуроками</p>
+
+            <!-- ЗАЯВКИ -->
+            <div class="admin-section">
+                <h2>📩 Заявки</h2>
+                <div id="applicationsList" class="admin-list">
+                    <!-- загружаются через JS -->
+                </div>
+            </div>
+
+            <!-- ВИДЕО -->
+            <div class="admin-section">
+                <h2>📹 Видеоуроки</h2>
+                <form id="videoForm">
+                    <label for="videoTitle">Название видео</label>
+                    <input type="text" id="videoTitle" placeholder="Например: Урок по Figma" required>
+                    <label for="videoURL">Ссылка на видео (YouTube, Vimeo и др.)</label>
+                    <input type="url" id="videoURL" placeholder="https://www.youtube.com/watch?v=..." required>
+                    <button type="submit" class="btn btn-primary btn-arrow">Добавить видео</button>
+                </form>
+                <div id="videoList" class="admin-list" style="margin-top:20px;">
+                    <!-- загружаются через JS -->
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="index.html">← Вернуться на сайт</a>
+                <br><br>
+                <button class="btn btn-secondary" id="logoutBtn">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
