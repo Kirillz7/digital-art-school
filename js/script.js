@@ -68,12 +68,23 @@ document.getElementById('signupForm').addEventListener('submit', function(e) {
 });
 
 // ============================================
-// 4. ВИДЕО – МОДАЛКА И РЕДИРЕКТ НА video.html
+// 4. ВИДЕО (на главной, скрыто до получения доступа)
 // ============================================
+const videoSection = document.getElementById('videosSection');
 const modal = document.getElementById('videoAccessModal');
 const closeModal = document.getElementById('modalClose');
 const freeLessonsBtn = document.getElementById('freeLessonsBtn');
 const freeLessonsBtn2 = document.getElementById('freeLessonsBtn2');
+
+function checkVideoAccess() {
+    const hasAccess = localStorage.getItem('videoAccess') === 'true';
+    if (hasAccess) {
+        videoSection.style.display = 'block';
+        loadVideos();
+    } else {
+        videoSection.style.display = 'none';
+    }
+}
 
 function openModal() {
     modal.classList.add('active');
@@ -82,14 +93,16 @@ function closeModalHandler() {
     modal.classList.remove('active');
 }
 
-freeLessonsBtn.addEventListener('click', openModal);
-freeLessonsBtn2.addEventListener('click', openModal);
-closeModal.addEventListener('click', closeModalHandler);
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModalHandler();
-});
+if (freeLessonsBtn) freeLessonsBtn.addEventListener('click', openModal);
+if (freeLessonsBtn2) freeLessonsBtn2.addEventListener('click', openModal);
+if (closeModal) closeModal.addEventListener('click', closeModalHandler);
+if (modal) {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModalHandler();
+    });
+}
 
-// Обработка формы доступа – сохраняем и редиректим
+// Обработка формы доступа – остаёмся на главной
 document.getElementById('accessForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const email = document.getElementById('accessEmail').value.trim();
@@ -97,12 +110,53 @@ document.getElementById('accessForm').addEventListener('submit', function(e) {
         localStorage.setItem('videoAccess', 'true');
         localStorage.setItem('videoAccessEmail', email);
         closeModalHandler();
-        // Перенаправляем на страницу видео
-        window.location.href = 'video.html';
+        checkVideoAccess();
+        // Плавно прокручиваем к разделу с видео
+        setTimeout(() => {
+            const target = document.getElementById('videosSection');
+            if (target) {
+                const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+                window.scrollTo({ top, behavior: 'smooth' });
+            }
+        }, 200);
+        alert('Доступ предоставлен! Первые видео появятся в течение сентября.');
     } else {
         alert('Введите email.');
     }
 });
+
+// Загрузка видео в галерею
+function loadVideos() {
+    const gallery = document.getElementById('videoGallery');
+    if (!gallery) return;
+    const videos = JSON.parse(localStorage.getItem('videos')) || [];
+    if (videos.length === 0) {
+        gallery.innerHTML = '<p style="color: var(--text-secondary); grid-column: 1 / -1; text-align: center; padding: 20px 0;">' +
+            '🎬 Видеоуроки скоро появятся! Первые ролики будут опубликованы <strong>в течение сентября</strong>.</p>';
+        return;
+    }
+    gallery.innerHTML = videos.map(v => {
+        let embedUrl = v.url;
+        if (v.url.includes('youtube.com/watch?v=')) {
+            embedUrl = v.url.replace('watch?v=', 'embed/');
+        } else if (v.url.includes('youtu.be/')) {
+            const id = v.url.split('/').pop();
+            embedUrl = `https://www.youtube.com/embed/${id}`;
+        } else if (v.url.includes('vimeo.com/')) {
+            const id = v.url.split('/').pop();
+            embedUrl = `https://player.vimeo.com/video/${id}`;
+        }
+        return `
+            <div class="video-item">
+                <iframe src="${embedUrl}" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                <h4>${v.title}</h4>
+            </div>
+        `;
+    }).join('');
+}
+
+// Проверяем доступ при загрузке
+document.addEventListener('DOMContentLoaded', checkVideoAccess);
 
 // ============================================
 // 5. ПЛАВНЫЙ СКРОЛЛ
