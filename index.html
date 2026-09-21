@@ -21,6 +21,7 @@
             <ul class="nav-links" id="navLinks">
                 <li><a href="#modules">Модули</a></li>
                 <li><a href="#works">Работы</a></li>
+                <li><a href="#videosSection">Видео</a></li>
                 <li><a href="#pricing">Цены</a></li>
                 <li><a href="#contact" class="nav-cta">Записаться</a></li>
             </ul>
@@ -176,7 +177,7 @@
         </div>
     </section>
 
-    <!-- ========== РАБОТЫ УЧЕНИКОВ (БЕЗ ТЕКСТА) ========== -->
+    <!-- ========== РАБОТЫ УЧЕНИКОВ ========== -->
     <section class="section works anchor-offset" id="works">
         <div class="container">
 
@@ -197,17 +198,36 @@
         </div>
     </section>
 
+    <!-- ========== ВИДЕО (НА ГЛАВНОЙ, СКРЫТО ДО ДОСТУПА) ========== -->
+    <section class="section videos anchor-offset" id="videosSection" style="display: none;">
+        <div class="container">
+            <div class="section-label">📹 Видеоуроки</div>
+            <h2 class="section-title">Смотри <span class="highlight">наши уроки</span></h2>
+            <p class="section-sub">
+                Первые видеоролики будут доступны <strong>в течение сентября</strong>. Следите за обновлениями!
+            </p>
+            <div id="videoGallery" class="video-gallery">
+                <!-- Видео загружаются через JavaScript -->
+            </div>
+        </div>
+    </section>
+
     <!-- ========== МОДАЛЬНОЕ ОКНО ДЛЯ ДОСТУПА К ВИДЕО ========== -->
     <div class="modal-overlay" id="videoAccessModal">
         <div class="modal-box">
             <button class="modal-close" id="modalClose">&times;</button>
             <h3>🎬 Получите доступ к трём бесплатным урокам</h3>
-            <p>Введите ваш email, и мы отправим ссылки на видео.</p>
+            <p>Введите ваш email, и мы сообщим, когда видео будут опубликованы.</p>
+            <p style="color: var(--pink); font-weight: 600; margin-top: -8px;">
+                Первые ролики появятся в течение сентября.
+            </p>
             <form id="accessForm">
                 <input type="email" id="accessEmail" placeholder="Ваш email" required />
                 <button type="submit" class="btn btn-primary btn-arrow">Получить доступ</button>
             </form>
-            <p style="margin-top: 12px; font-size: 14px; color: var(--text-muted);">После ввода email вы будете перенаправлены на страницу с видео.</p>
+            <p style="margin-top: 12px; font-size: 14px; color: var(--text-muted);">
+                После ввода email раздел с видео станет доступен на этой странице.
+            </p>
         </div>
     </div>
 
@@ -266,6 +286,7 @@
                 <a href="#hero">Главная</a>
                 <a href="#modules">Модули</a>
                 <a href="#works">Работы</a>
+                <a href="#videosSection">Видео</a>
                 <a href="#pricing">Цены</a>
                 <a href="#contact">Контакты</a>
             </div>
